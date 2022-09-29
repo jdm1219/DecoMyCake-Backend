@@ -4,21 +4,19 @@ import { SigninRequest } from './dto/signin-request';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { SignupRequest } from './dto/signup-request';
 import { InternalServerErrorException } from '../exceptions';
+import { UserService } from '../user/user.service';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+  ) {}
 
   async signIn(signinRequest: SigninRequest) {
-    const where: Prisma.UserWhereUniqueInput = {
-      id: signinRequest.id,
-    };
-    const user = await prisma.user.findUnique({
-      where,
-    });
-
+    const user = await this.userService.findById(signinRequest.id);
     return {
       access_token: this.jwtService.sign(user),
     };

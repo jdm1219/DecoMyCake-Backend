@@ -11,19 +11,22 @@ generator client {
 }
 
 model User {
-  uid      Int    @id @default(autoincrement())
-  id       String @unique
-  password String
-  nickname String @unique
-  posts    Post[]
+  uid          String @id @unique @default(uuid())
+  id           String @unique
+  password     String
+  nickname     String @unique
+  writtenPosts Post[] @relation("writtenPosts")
+  ownPosts     Post[] @relation("ownPosts")
 }
 
 model Post {
-  id          Int      @id @default(autoincrement())
-  content     String
-  readingDate DateTime
-  fileName    String?
-  insertDt    DateTime @default(now())
-  User        User?    @relation(fields: [userId], references: [uid])
-  userId      Int?
+  id           Int      @id @default(autoincrement())
+  content      String
+  readingDate  DateTime
+  fileName     String?
+  insertDt     DateTime @default(now())
+  insertUser   User     @relation("writtenPosts", fields: [insertUserId], references: [uid])
+  insertUserId String
+  User         User     @relation("ownPosts", fields: [userId], references: [uid])
+  userId       String
 }
