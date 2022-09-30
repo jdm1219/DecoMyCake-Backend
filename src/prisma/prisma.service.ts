@@ -15,6 +15,35 @@ type PostWithInsertUser = Prisma.PostGetPayload<{
 
 @Injectable()
 export class PrismaService extends PrismaClient {
+  // User
+
+  async findById(id) {
+    return await this.user.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async signUp(user) {
+    try {
+      await this.user.create({
+        data: user,
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (e.code) {
+          case 'P2002':
+            // TODO: CustomException 만들기
+            return `중복된 ${e.meta.target[0]}값 입니다.`;
+        }
+      }
+      throw new InternalServerErrorException();
+    }
+  }
+
+  // Post
+
   async createPost({ insertUserId, content, readingDate, fileName, userId }) {
     try {
       return await this.post.create({
