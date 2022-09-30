@@ -3,13 +3,10 @@ import { PostService } from './post.service';
 import { CreatePostRequest } from './dto/create-post-request';
 import { PostListQuery } from './dto/post-list-query';
 import { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
 
 @Controller('post')
 export class PostController {
-  constructor(
-    private readonly postService: PostService, // private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly postService: PostService) {}
 
   @Post('')
   async createPost(

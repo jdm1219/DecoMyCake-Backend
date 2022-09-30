@@ -6,9 +6,10 @@ import { PostModule } from './post/post.module';
 import { JwtMiddleware } from './common/middleware/jwt.middleware';
 import { LocalJwtModule } from './common/module/jwt.module';
 import { UserService } from './user/user.service';
+import { GlobalModule } from './global/global.module';
 
 @Module({
-  imports: [AuthModule, PostModule, LocalJwtModule],
+  imports: [AuthModule, PostModule, LocalJwtModule, GlobalModule],
   controllers: [AppController],
   providers: [AppService, UserService],
 })
