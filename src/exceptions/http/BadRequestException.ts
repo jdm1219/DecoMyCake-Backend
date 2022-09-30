@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class BadRequestException extends HttpException {
-  constructor() {
+  constructor(message = '잘못된 요청입니다.') {
     super(
       {
         status: HttpStatus.BAD_REQUEST,
-        message: '잘못된 요청입니다.',
+        message,
       },
       HttpStatus.BAD_REQUEST,
     );

@@ -26,20 +26,9 @@ export class PrismaService extends PrismaClient {
   }
 
   async signUp(user) {
-    try {
-      await this.user.create({
-        data: user,
-      });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (e.code) {
-          case 'P2002':
-            // TODO: CustomException 만들기
-            return `중복된 ${e.meta.target[0]}값 입니다.`;
-        }
-      }
-      throw new InternalServerErrorException();
-    }
+    await this.user.create({
+      data: user,
+    });
   }
 
   // Post
