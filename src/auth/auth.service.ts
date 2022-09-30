@@ -24,4 +24,8 @@ export class AuthService {
     await this.prismaService.signUp(signupRequest);
     return 'ok';
   }
+
+  async verify() {
+    return 'ok';
+  }
 }

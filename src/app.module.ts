@@ -1,5 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { PostModule } from './post/post.module';
@@ -10,11 +14,16 @@ import { GlobalModule } from './global/global.module';
 
 @Module({
   imports: [AuthModule, PostModule, LocalJwtModule, GlobalModule],
-  controllers: [AppController],
   providers: [AppService, UserService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).exclude('/auth', '/auth/(.*)').forRoutes('*');
+    consumer
+      .apply(JwtMiddleware)
+      .exclude(
+        { path: 'auth/sign-in', method: RequestMethod.POST },
+        { path: 'auth/sign-up', method: RequestMethod.POST },
+      )
+      .forRoutes('*');
   }
 }
