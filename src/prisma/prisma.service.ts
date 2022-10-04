@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { InternalServerErrorException } from '../exceptions';
 import { getPagination } from '../utils/page';
+import { hashPassword } from '../utils/user';
 
 type PostWithInsertUser = Prisma.PostGetPayload<{
   include: {
@@ -26,8 +27,13 @@ export class PrismaService extends PrismaClient {
   }
 
   async signUp(user) {
+    const hashedPassword = await hashPassword(user.password);
+
     await this.user.create({
-      data: user,
+      data: {
+        ...user,
+        password: hashedPassword,
+      },
     });
   }
 

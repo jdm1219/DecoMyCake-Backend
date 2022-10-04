@@ -4,6 +4,8 @@ import { SigninRequest } from './dto/signin-request';
 import { SignupRequest } from './dto/signup-request';
 import { UserService } from '../user/user.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { validatePassword } from '../utils/user';
+import { UnauthorizedException } from '../exceptions';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +17,12 @@ export class AuthService {
 
   async signIn(signinRequest: SigninRequest) {
     const user = await this.userService.findById(signinRequest.id);
+    if (!(await validatePassword(signinRequest.password, user.password))) {
+      throw new UnauthorizedException(
+        '아이디또는 비밀번호를 잘못 입력했습니다.',
+      );
+    }
+
     return {
       access_token: this.jwtService.sign(user),
     };
