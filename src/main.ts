@@ -3,9 +3,12 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { ResponseInterceptor } from './interceptors/response.interceptor';
+import { ErrorsInterceptor } from './interceptors/errors.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalInterceptors(new ResponseInterceptor(), new ErrorsInterceptor());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.setGlobalPrefix(process.env.API_PREFIX);
   app.use(helmet());

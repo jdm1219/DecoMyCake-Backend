@@ -20,7 +20,6 @@ export class AuthController extends SwaggerController {
   }
 
   @Post('/sign-in')
-  @HttpCode(200)
   @ApiOperation({ summary: '로그인', description: '로그인' })
   @ApiOkResponse({
     description: '성공',
