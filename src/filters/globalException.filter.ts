@@ -9,6 +9,7 @@ import { Prisma } from '@prisma/client';
 import {
   BadRequestException,
   InternalServerErrorException,
+  NotFoundException,
 } from '../exceptions';
 
 @Catch()
@@ -25,9 +26,17 @@ export default class GlobalExceptionFilter implements ExceptionFilter {
     }
 
     if (exception instanceof HttpException) {
-      return response
-        .status(exception.getStatus())
-        .json(exception.getResponse());
+      switch (exception.getStatus()) {
+        case 404:
+          const notFoundException = new NotFoundException();
+          return response
+            .status(notFoundException.getStatus())
+            .json(notFoundException.getResponse());
+        default:
+          return response
+            .status(exception.getStatus())
+            .json(exception.getResponse());
+      }
     }
 
     const e = new InternalServerErrorException();
