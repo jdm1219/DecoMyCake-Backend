@@ -7,6 +7,7 @@ import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.setGlobalPrefix(process.env.API_PREFIX);
   app.use(helmet());
 
   const config = new DocumentBuilder()

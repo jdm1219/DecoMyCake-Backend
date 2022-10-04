@@ -14,6 +14,8 @@ import { GlobalModule } from './global/global.module';
 import { APP_FILTER } from '@nestjs/core';
 import GlobalExceptionFilter from './filters/globalException.filter';
 import { AppLoggerMiddleware } from './common/middleware/logger.middleware';
+import { AuthController } from './auth/auth.controller';
+import { PostController } from './post/post.controller';
 
 @Module({
   imports: [AuthModule, PostModule, LocalJwtModule, GlobalModule],
@@ -33,9 +35,15 @@ export class AppModule implements NestModule {
     consumer
       .apply(JwtMiddleware)
       .exclude(
-        { path: 'auth/sign-in', method: RequestMethod.POST },
-        { path: 'auth/sign-up', method: RequestMethod.POST },
+        {
+          path: `${process.env.API_PREFIX}/auth/sign-in`,
+          method: RequestMethod.POST,
+        },
+        {
+          path: `${process.env.API_PREFIX}/auth/sign-up`,
+          method: RequestMethod.POST,
+        },
       )
-      .forRoutes(AppModule);
+      .forRoutes(AuthController, PostController);
   }
 }
