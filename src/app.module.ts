@@ -13,6 +13,7 @@ import { UserService } from './user/user.service';
 import { GlobalModule } from './global/global.module';
 import { APP_FILTER } from '@nestjs/core';
 import GlobalExceptionFilter from './filters/globalException.filter';
+import { AppLoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   imports: [AuthModule, PostModule, LocalJwtModule, GlobalModule],
@@ -27,6 +28,8 @@ import GlobalExceptionFilter from './filters/globalException.filter';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AppLoggerMiddleware).forRoutes('*');
+
     consumer
       .apply(JwtMiddleware)
       .exclude(
