@@ -16,6 +16,7 @@ export class PostService {
 
     await this.prismaService.createPost({
       ...postRequest,
+      insertUserId,
       userId,
       readingDate: dayjs(readingDate).toDate(),
     });
@@ -25,29 +26,46 @@ export class PostService {
   async getPostList({ id, page, size }) {
     const { uid: userId } = await this.userService.findById(id);
 
-    return await this.prismaService.getPostList({
+    const { posts, total } = await this.prismaService.getPostList({
       userId,
       page,
       size,
     });
+
+    return {
+      content: posts.map(({ id, fileName, insertDt }) => ({
+        id,
+        fileName,
+        insertDt,
+      })),
+      total,
+    };
   }
 
   async getOwnPostList({ id, page, size }) {
     const { uid: userId } = await this.userService.findById(id);
 
-    return (
-      await this.prismaService.getPostList({
-        userId,
-        page,
-        size,
-      })
-    ).map(({ id, content, readingDate, fileName, insertDt, insertUser }) => ({
-      id,
-      content,
-      fileName,
-      insertDt,
-      lockYn: dayjs().isBefore(dayjs(readingDate)) ? 'Y' : 'N',
-      nickname: insertUser.nickname,
-    }));
+    const { posts, total } = await this.prismaService.getPostList({
+      userId,
+      page,
+      size,
+    });
+    return {
+      content: posts.map(
+        ({ id, content, readingDate, fileName, insertDt, insertUser }) => {
+          const isUnlock = dayjs().isBefore(dayjs(readingDate));
+          return {
+            id,
+            content: isUnlock ? undefined : content,
+            fileName,
+            insertDt,
+            lockYn: isUnlock ? 'Y' : 'N',
+            nickname: insertUser.nickname,
+            readingDate,
+          };
+        },
+      ),
+      total,
+    };
   }
 }

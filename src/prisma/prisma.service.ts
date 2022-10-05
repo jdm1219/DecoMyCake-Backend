@@ -40,37 +40,24 @@ export class PrismaService extends PrismaClient {
   // Post
 
   async createPost({ insertUserId, content, readingDate, fileName, userId }) {
-    try {
-      return await this.post.create({
-        data: {
-          insertUserId,
-          content,
-          fileName,
-          userId,
-          readingDate,
-        },
-      });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (e.code) {
-          case 'P2002':
-            // TODO: CustomException 만들기
-            return `중복된 ${e.meta.target[0]}값 입니다.`;
-        }
-      }
-      throw new InternalServerErrorException();
-    }
+    return await this.post.create({
+      data: {
+        insertUserId,
+        content,
+        fileName,
+        userId,
+        readingDate,
+      },
+    });
   }
 
-  async getPostList<T>({
-    userId,
-    page,
-    size,
-    include = {},
-  }): Promise<PostWithInsertUser[] | null> {
+  async getPostList({ userId, page, size, include = {} }): Promise<{
+    posts: PostWithInsertUser[] | null;
+    total: number;
+  }> {
     const pagination = getPagination(page, size);
-    try {
-      return await this.post.findMany({
+    const [posts, total] = await this.$transaction([
+      this.post.findMany({
         where: {
           userId,
         },
@@ -86,10 +73,17 @@ export class PrismaService extends PrismaClient {
           insertDt: 'desc',
         },
         ...pagination,
-      });
-    } catch (e) {
-      console.log(e);
-      throw e;
-    }
+      }),
+      this.post.count({
+        where: {
+          userId,
+        },
+      }),
+    ]);
+
+    return {
+      posts,
+      total,
+    };
   }
 }
