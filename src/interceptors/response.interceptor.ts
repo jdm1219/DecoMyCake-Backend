@@ -6,7 +6,7 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
@@ -16,6 +16,12 @@ export class ResponseInterceptor implements NestInterceptor {
     if (request.method === 'POST') {
       response.status(HttpStatus.OK);
     }
-    return next.handle();
+    return next.handle().pipe(
+      map((data) => ({
+        message: response.statusCode < 300 ? 'OK' : 'FAIL',
+        status: response.statusCode,
+        data,
+      })),
+    );
   }
 }
