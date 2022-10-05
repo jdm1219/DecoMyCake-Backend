@@ -17,8 +17,15 @@ export class ErrorsInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       catchError((err) => {
-        if (err instanceof Prisma.PrismaClientKnownRequestError) {
-          const prismaException = getPrismaEception(err);
+        // Prisma 에러
+        if (
+          err instanceof Prisma.PrismaClientInitializationError ||
+          err instanceof Prisma.PrismaClientKnownRequestError ||
+          err instanceof Prisma.PrismaClientRustPanicError ||
+          err instanceof Prisma.PrismaClientUnknownRequestError ||
+          err instanceof Prisma.PrismaClientValidationError
+        ) {
+          const prismaException = getPrismaException(err);
           return throwError(() => prismaException);
         }
 
@@ -28,13 +35,14 @@ export class ErrorsInterceptor implements NestInterceptor {
   }
 }
 
-function getPrismaEception(exception) {
+function getPrismaException(exception) {
   switch (exception.code) {
     case 'P2002':
       return new BadRequestException(
         `중복된 ${exception.meta.target[0]}값 입니다.`,
       );
     default:
-      return new InternalServerErrorException(exception.message);
+      console.error(exception);
+      return new InternalServerErrorException(exception.code);
   }
 }
