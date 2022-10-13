@@ -20,7 +20,7 @@ export class PostService {
       userId,
       readingDate: dayjs(readingDate).toDate(),
     });
-    return 'ok';
+    return null;
   }
 
   async getPostList({ id, page, size }) {

@@ -30,10 +30,10 @@ export class AuthService {
 
   async signUp(signupRequest: SignupRequest) {
     await this.prismaService.signUp(signupRequest);
-    return 'ok';
+    return null;
   }
 
   async verify() {
-    return 'ok';
+    return null;
   }
 }

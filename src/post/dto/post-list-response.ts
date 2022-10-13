@@ -1,9 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
-export class PostListResponse {
+export class PostList {
   @ApiProperty({
-    example: 'ok',
+    example: '1',
     description: 'id',
     required: true,
   })
@@ -13,7 +13,7 @@ export class PostListResponse {
   @ApiProperty({
     example: '내용',
     description: 'content',
-    required: true,
+    required: false,
   })
   @IsString()
   content: string;
@@ -49,4 +49,19 @@ export class PostListResponse {
   })
   @IsString()
   nickname?: string;
+}
+
+@ApiExtraModels(PostList)
+export class PostListResponse {
+  @ApiProperty({
+    type: 'array',
+    items: { $ref: getSchemaPath(PostList) },
+  })
+  content: PostList[];
+
+  @ApiProperty({
+    example: '50',
+    description: 'total',
+  })
+  total: number;
 }
