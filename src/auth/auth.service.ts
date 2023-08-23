@@ -24,7 +24,11 @@ export class AuthService {
     }
 
     return {
-      accessToken: this.jwtService.sign(user),
+      accessToken: this.jwtService.sign({
+        uid: user.uid,
+        id: user.id,
+        nickname: user.nickname
+      }),
     };
   }
 
