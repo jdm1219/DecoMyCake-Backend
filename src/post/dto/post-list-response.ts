@@ -64,4 +64,10 @@ export class PostListResponse {
     description: 'total',
   })
   total: number;
+
+  @ApiProperty({
+    example: 'test',
+    description: 'nickname',
+  })
+  nickname: string;
 }

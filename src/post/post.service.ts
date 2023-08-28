@@ -24,7 +24,7 @@ export class PostService {
   }
 
   async getPostList({ id, page, size }) {
-    const { uid: userId } = await this.userService.findById(id);
+    const { uid: userId, nickname } = await this.userService.findById(id);
 
     const { posts, total } = await this.prismaService.getPostList({
       userId,
@@ -39,11 +39,12 @@ export class PostService {
         insertDt,
       })),
       total,
+      nickname,
     };
   }
 
   async getOwnPostList({ id, page, size }) {
-    const { uid: userId } = await this.userService.findById(id);
+    const { uid: userId, nickname } = await this.userService.findById(id);
 
     const { posts, total } = await this.prismaService.getPostList({
       userId,
@@ -66,6 +67,7 @@ export class PostService {
         },
       ),
       total,
+      nickname,
     };
   }
 }
